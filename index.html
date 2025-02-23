@@ -95,6 +95,8 @@
             <h2>Installation</h2>
             <p>You can install Zarr via <code>pip</code>:</p>
             <pre><code class="language-bash">pip install zarr</code></pre>
+            <p>by <code>conda</code>:</p>
+            <pre><code class="language-bash">conda install --channel conda-forge zarr</code></pre>
             <p>Ensure you have the required dependencies installed for full functionality, such as <code>h5py</code> for HDF5 support or <code>numcodecs</code> for compression algorithms.</p>
         </div>
 
@@ -103,7 +105,6 @@
             <p>Chunking allows you to split large arrays into smaller, more manageable pieces. This is especially useful when working with datasets that don't fit into memory.</p>
             <pre><code class="language-python">
 import zarr
-
 # Create a Zarr array with chunking
 arr = zarr.zeros((10000, 10000), chunks=(1000, 1000))
             </code></pre>

@@ -21,10 +21,22 @@
             padding: 50px 20px;
         }
 
-        .list-group-item {
-            border: none;
-            padding: 8px 12px;
-            margin-bottom: 5px;
+        .lol {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .hehe {
+            width: 48%; /* Adjust width to fit two per row */
+            display: flex;
+            flex-direction: column;
+            align-items: left;
+            text-align: left;
+            text-size-adjust: large;
+        }
+        img {
+            max-width: 100%;
+          height: auto;}
         }
     </style>
 </head>
@@ -110,15 +122,27 @@
         </div>
 
         <div id="How-zarr-works" class="section">
+            <h2>How Zarr Works?</h2>
             <p>Arrays are container of items of the same data-type & size (in bits). The number of dimensions and items in container are described by the shape.</p>
             <p>But what if the array size is too large to fit into memory? Here comes Zarr! </p>
-            <p>
-                It divides the whole array into chunks (chunking)
-            </p>
-            <p>
-                then compresses each chunk(over 20 supported comprerssors e.g: BLOSC, Zstd, Zlib etc)
-            </p>
-            <p>retrieve chunks only when needed </p>
+            <div class="lol">
+                <div class="box">
+                    <p>It divides the whole array into chunks (chunking):</p>
+                    <img src="./Images/chunk.png" >
+                </div>
+                <div class="hehe">
+                    <p>Then compresses each chunk (over 20 supported compressors e.g: BLOSC, Zstd, Zlib etc):</p>
+                    <img src="./Images/compress.png">
+                </div>
+                <div class="hehe">
+                    <p>Retrieve chunks only when needed:</p>
+                    <img src="./Images/retrieve.png">
+                </div>
+                <div>
+                    <p>This visualization provides a clear understanding of how the array is stored in memory. Each chunk is stored as an entry in a dictionary, where keys follow a structured format like 0.0, 0.1, etc. The corresponding values are stored in binary format, optimizing storage and retrieval efficiency.:</p>
+                    <img src="./Images/Full.png" style="size: 0.3 rem;">
+                </div>
+            </div>
         </div>
 
         <div id="chunking" class="section">

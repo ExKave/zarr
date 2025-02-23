@@ -102,9 +102,23 @@
         <div id="installation" class="section">
             <h2>Installation</h2>
             <p>You can install Zarr via <code>pip</code>:</p>
-            <pre><code class="bash">pip install zarr</code></pre>
+            <pre><code class="language-bash">pip install zarr</code></pre>
+            <p>by <code>conda</code>:</p>
+            <pre><code class="language-bash">conda install --channel conda-forge zarr</code></pre>
             <p>Ensure you have the required dependencies installed for full functionality, such as <code>h5py</code> for
                 HDF5 support or <code>numcodecs</code> for compression algorithms.</p>
+        </div>
+
+        <div id="How-zarr-works" class="section">
+            <p>Arrays are container of items of the same data-type & size (in bits). The number of dimensions and items in container are described by the shape.</p>
+            <p>But what if the array size is too large to fit into memory? Here comes Zarr! </p>
+            <p>
+                It divides the whole array into chunks (chunking)
+            </p>
+            <p>
+                then compresses each chunk(over 20 supported comprerssors e.g: BLOSC, Zstd, Zlib etc)
+            </p>
+            <p>retrieve chunks only when needed </p>
         </div>
 
         <div id="chunking" class="section">
@@ -113,7 +127,6 @@
                 when working with datasets that don't fit into memory.</p>
             <pre><code class="language-python">
 import zarr
-
 # Create a Zarr array with chunking
 arr = zarr.zeros((10000, 10000), chunks=(1000, 1000))
             </code></pre>

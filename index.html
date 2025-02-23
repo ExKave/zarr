@@ -100,6 +100,18 @@
             <p>Ensure you have the required dependencies installed for full functionality, such as <code>h5py</code> for HDF5 support or <code>numcodecs</code> for compression algorithms.</p>
         </div>
 
+        <div id="How-zarr-works" class="section">
+            <p>Arrays are container of items of the same data-type & size (in bits). The number of dimensions and items in container are described by the shape.</p>
+            <p>But what if the array size is too large to fit into memory? Here comes Zarr! </p>
+            <p>
+                It divides the whole array into chunks (chunking)
+            </p>
+            <p>
+                then compresses each chunk(over 20 supported comprerssors e.g: BLOSC, Zstd, Zlib etc)
+            </p>
+            <p>retrieve chunks only when needed </p>
+        </div>
+
         <div id="chunking" class="section">
             <h2>Chunking</h2>
             <p>Chunking allows you to split large arrays into smaller, more manageable pieces. This is especially useful when working with datasets that don't fit into memory.</p>

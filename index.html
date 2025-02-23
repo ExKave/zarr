@@ -20,6 +20,7 @@
         .section {
             padding: 50px 20px;
         }
+
         .lol {
             display: flex;
             flex-wrap: wrap;
@@ -35,7 +36,7 @@
         }
         img {
             max-width: 100%;
-            height: auto;
+          height: auto;}
         }
     </style>
 </head>
@@ -104,8 +105,10 @@
         <!-- Content Sections -->
         <div id="what-is-zarr" class="section">
             <h2>What is Zarr?</h2>
-            <p>Zarr is a Python library for the storage of large, chunked, compressed arrays, designed for high-performance storage of data arrays, commonly used in scientific computing.</p>
-            <p>Zarr supports both array-based data storage and flexible data structures, enabling seamless integration with high-performance computing systems.</p>
+            <p>Zarr is a Python library for the storage of large, chunked, compressed arrays, designed for
+                high-performance storage of data arrays, commonly used in scientific computing.</p>
+            <p>Zarr supports both array-based data storage and flexible data structures, enabling seamless integration
+                with high-performance computing systems.</p>
         </div>
 
         <div id="installation" class="section">
@@ -114,7 +117,8 @@
             <pre><code class="language-bash">pip install zarr</code></pre>
             <p>by <code>conda</code>:</p>
             <pre><code class="language-bash">conda install --channel conda-forge zarr</code></pre>
-            <p>Ensure you have the required dependencies installed for full functionality, such as <code>h5py</code> for HDF5 support or <code>numcodecs</code> for compression algorithms.</p>
+            <p>Ensure you have the required dependencies installed for full functionality, such as <code>h5py</code> for
+                HDF5 support or <code>numcodecs</code> for compression algorithms.</p>
         </div>
 
         <div id="How-zarr-works" class="section">
@@ -143,30 +147,35 @@
 
         <div id="chunking" class="section">
             <h2>Chunking</h2>
-            <p>Chunking allows you to split large arrays into smaller, more manageable pieces. This is especially useful when working with datasets that don't fit into memory.</p>
+            <p>Chunking allows you to split large arrays into smaller, more manageable pieces. This is especially useful
+                when working with datasets that don't fit into memory.</p>
             <pre><code class="language-python">
 import zarr
 # Create a Zarr array with chunking
 arr = zarr.zeros((10000, 10000), chunks=(1000, 1000))
             </code></pre>
-            <p>Here, the array is split into chunks of size 1000x1000. You can control the chunk size depending on your hardware capabilities and the nature of your data.</p>
+            <p>Here, the array is split into chunks of size 1000x1000. You can control the chunk size depending on your
+                hardware capabilities and the nature of your data.</p>
         </div>
 
         <div id="compression" class="section">
             <h2>Compression</h2>
-            <p>Zarr supports various compression methods to reduce storage size, including <code>blosc</code>, <code>gzip</code>, and others.</p>
+            <p>Zarr supports various compression methods to reduce storage size, including <code>blosc</code>,
+                <code>gzip</code>, and others.</p>
             <pre><code class="language-python">
 import zarr
 
 # Create a compressed Zarr array
 arr = zarr.zeros((10000, 10000), chunks=(1000, 1000), dtype='f4', compressor=zarr.Blosc(cname='zstd', clevel=3))
             </code></pre>
-            <p>This example creates a compressed array using <code>zstd</code> compression with a compression level of 3.</p>
+            <p>This example creates a compressed array using <code>zstd</code> compression with a compression level of
+                3.</p>
         </div>
 
         <div id="parallelism" class="section">
             <h2>Parallelism</h2>
-            <p>Zarr can take advantage of parallel processing for efficient data reading and writing. It supports multi-threading and parallelized computations on chunks.</p>
+            <p>Zarr can take advantage of parallel processing for efficient data reading and writing. It supports
+                multi-threading and parallelized computations on chunks.</p>
             <pre><code class="language-python">
 import zarr
 import dask.array as da
@@ -178,12 +187,14 @@ dask_array = da.from_array(zarr_store, chunks=(1000, 1000))
 # Perform a parallel operation
 result = dask_array.sum().compute()
             </code></pre>
-            <p>Using Dask, you can perform parallel operations on a Zarr-backed array, leveraging multi-core CPUs or distributed systems for large-scale computation.</p>
+            <p>Using Dask, you can perform parallel operations on a Zarr-backed array, leveraging multi-core CPUs or
+                distributed systems for large-scale computation.</p>
         </div>
 
         <div id="storage" class="section">
             <h2>Storage Backends</h2>
-            <p>Zarr supports different storage backends, including local file systems, cloud storage, and databases. You can choose the backend that best suits your needs.</p>
+            <p>Zarr supports different storage backends, including local file systems, cloud storage, and databases. You
+                can choose the backend that best suits your needs.</p>
             <pre><code class="language-python">
 import zarr
 
@@ -191,24 +202,34 @@ import zarr
 store = zarr.storage.Store('s3://bucket-name/data.zarr')
 arr = zarr.open(store, mode='w', shape=(10000, 10000), dtype='f4', chunks=(1000, 1000))
             </code></pre>
-            <p>This example shows how to use Zarr with Amazon S3 as a storage backend, but you can easily switch to other cloud providers or local file systems.</p>
+            <p>This example shows how to use Zarr with Amazon S3 as a storage backend, but you can easily switch to
+                other cloud providers or local file systems.</p>
         </div>
 
         <div id="creating-arrays" class="section">
             <h2>Creating Arrays</h2>
-            <p>Creating Zarr arrays is simple and efficient. You can create arrays from scratch, load them from existing data, or use other libraries like Dask to work with large datasets.</p>
+            <p>Creating Zarr arrays is simple and efficient. You can create arrays from scratch, load them from existing
+                data, or use other libraries like Dask to work with large datasets.</p>
             <pre><code class="language-python">
 import zarr
 
 # Create a new Zarr array
-arr = zarr.create(shape=(1000, 1000), dtype='f4', chunks=(100, 100))
+arr = zarr.create(shape=(1000, 1000), dtype='f4', chunks=(100, 100)) #This will create a 1000x1000 array with 100x100 chunks, suitable for efficient access and modification.
+arr2 = zarr.array([1, 2, 3, 4, 5]) #Creating an Array from a List
+arr3 = zarr.empty((5, 5), dtype='f4') #Creates an empty Zarr array of shape (5,5) with float32 data type
+arr4 = zarr.zeros((4, 4), dtype='i4') #Creating a Zero-Filled Array
+arr5 = zarr.ones((3, 3), dtype='f8') #Creating an Array with Ones
+arr6 = zarr.full((2, 2), fill_value=7, dtype='i4') #Creating a Persistent Zarr Array on Disk
+
+arr7 = zarr.open('resizable.zarr', mode='w', shape=(2, 2), dtype='i4')
+z.resize((4, 2)) #Creating a Resizable Array that could expand later
             </code></pre>
-            <p>This will create a 1000x1000 array with 100x100 chunks, suitable for efficient access and modification.</p>
         </div>
 
         <div id="reading-writing" class="section">
             <h2>Reading and Writing Data</h2>
-            <p>Zarr provides an easy-to-use API for reading and writing arrays to disk, including support for compression and chunking.</p>
+            <p>Zarr provides an easy-to-use API for reading and writing arrays to disk, including support for
+                compression and chunking.</p>
             <pre><code class="language-python">
 import zarr
 
@@ -223,7 +244,8 @@ arr[:] = 42
 
         <div id="parallel-operations" class="section">
             <h2>Parallel Operations</h2>
-            <p>Zarr supports parallel reading and writing of chunked arrays, which is especially beneficial when working with large datasets.</p>
+            <p>Zarr supports parallel reading and writing of chunked arrays, which is especially beneficial when working
+                with large datasets.</p>
             <pre><code class="language-python">
 import zarr
 import dask.array as da
@@ -235,15 +257,16 @@ dask_arr = da.from_array(arr, chunks=(1000, 1000))
 # Perform a parallel operation
 result = dask_arr.mean().compute()
             </code></pre>
-            <p>This example demonstrates performing parallel operations on a Zarr array using Dask, which efficiently computes the mean of the array.</p>
+            <p>This example demonstrates performing parallel operations on a Zarr array using Dask, which efficiently
+                computes the mean of the array.</p>
         </div>
 
     </div>
 
-<!-- Footer Section -->
-<footer class="bg-dark text-white text-center py-4 mt-5">
-    <p class="mb-0">© 2025 Team J074 | Animesh, Laxmidhar, Bhakti</p>
-</footer>
+    <!-- Footer Section -->
+    <footer class="bg-dark text-white text-center py-4 mt-5">
+        <p class="mb-0">© 2025 Team J074 | Animesh, Laxmidhar, Bhakti</p>
+    </footer>
 
 </body>
 

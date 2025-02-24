@@ -37,7 +37,6 @@
         img {
             max-width: 100%;
           height: auto;}
-        }
     </style>
 </head>
 
@@ -105,10 +104,10 @@
         <!-- Content Sections -->
         <div id="what-is-zarr" class="section">
             <h2>What is Zarr?</h2>
-            <p>Zarr is a Python library for the storage of large, chunked, compressed arrays, designed for
-                high-performance storage of data arrays, commonly used in scientific computing.</p>
+            <p>Zarr is a revolutionary library for managing large-scale numerical datasets using chunked, compressed N-dimensional arrays. Designed for modern computing needs, it enables efficient parallel I/O operations across diverse storage systems while maintaining NumPy-like semantics. Key advancements in v3 include native cloud storage integration, asynchronous I/O operations, and a 300% performance boost over previous versions</p>
             <p>Zarr supports both array-based data storage and flexible data structures, enabling seamless integration
                 with high-performance computing systems.</p>
+            
         </div>
 
         <div id="installation" class="section">
@@ -119,6 +118,10 @@
             <pre><code class="language-bash">conda install --channel conda-forge zarr</code></pre>
             <p>Ensure you have the required dependencies installed for full functionality, such as <code>h5py</code> for
                 HDF5 support or <code>numcodecs</code> for compression algorithms.</p>
+            <p>Verify installation:</p>
+            <pre><code class="language-python">import zarr
+print(zarr.__version__)  # Should output ≥3.0.3
+                </code></pre>
         </div>
 
         <div id="How-zarr-works" class="section">

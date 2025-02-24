@@ -58,6 +58,7 @@
                         <ul class="list-unstyled">
                             <li><a href="#what-is-zarr">What is Zarr?</a></li>
                             <li><a href="#installation">Installation</a></li>
+                            <li><a href="#How-zarr-works">How zarr works?</a></li>
                         </ul>
                     </div>
                 </div>
@@ -163,16 +164,102 @@ arr = zarr.zeros((10000, 10000), chunks=(1000, 1000))
 
         <div id="compression" class="section">
             <h2>Compression</h2>
-            <p>Zarr supports various compression methods to reduce storage size, including <code>blosc</code>,
-                <code>gzip</code>, and others.</p>
-            <pre><code class="language-python">
+            <p>Zarr optimizes data storage through chunk-based compression, enabling efficient handling of large datasets. Here's how it works with practical examples:</p>
+            <ol>
+                <h5><li>
+                    Basic Compression setup
+                </li></h5>
+                <p>Default Blosc Compression (LZ4 + Shuffle):</p>
+                <pre><code class="language-python">
 import zarr
+import numpy as np
 
-# Create a compressed Zarr array
-arr = zarr.zeros((10000, 10000), chunks=(1000, 1000), dtype='f4', compressor=zarr.Blosc(cname='zstd', clevel=3))
+# Create 10,000x10,000 array with Blosc compression
+arr = zarr.open('compressed.zarr', mode='w',
+                shape=(10000, 10000), chunks=(1000, 1000),
+                dtype='int32', compressor=zarr.Blosc())
+                
+arr[:] = np.random.randint(0, 100, (10000, 10000))  # 381.5MB raw → 3.1MB stored [1][4]
+                </code></pre>
+                <p>Key Features:
+
+                    <ul><li>121:1 compression ratio through chunk-wise processing</ul></li>
+                    
+                    <ul><li>Auto-shuffle reorganizes bytes for better compressibility</ul></li>
+                    
+                    <ul><li>Parallel compression across chunks</ul></li>
+                </p>
+                <h5><li>
+                    Compresssion Configuration Options
+                </li></h5>
+                <h6><ul><li>Algorithm Selection</li></ul></h6>
+                <pre><code class="language-python">
+# Zstandard compression with bit shuffle
+high_comp = zarr.open('zstd.zarr', mode='w', compressor=zarr.Blosc(cname='zstd', clevel=5, shuffle=2))
+# Disabled compression for fast access
+no_comp = zarr.open('raw.zarr', mode='w', compressor=None)  # Stores 38.1MB raw → 38.1MB
+                </code></pre>
+                <p>The first example uses Zstandard (Zstd) compression with Bit Shuffle, zstd is chosen as the compression algorithm (cname='zstd'). Compression level is set to 5 (clevel=5), balancing speed and compression ratio and bit Shuffle (shuffle=2) is applied to improve compression efficiency by rearranging bits for better pattern recognition.</p>
+                <p>The second example disables compression (compressor=None), resulting in raw data storage for faster access. This is useful when storage space is not a concern but quick retrieval is needed.</p>
+                <h6><ul><li>Compression levels</li></ul></h6>
+                <pre><code class="language-python">
+comp_levels = {
+    'fast': zarr.Blosc(clevel=1),    # Low compression, high speed
+    'balanced': zarr.Blosc(clevel=5),# Default
+    'max': zarr.Blosc(clevel=9)      # High compression, slower
+}
+                </code></pre>
+                <p>This dictionary defines different compression levels using the Blosc compressor: <br>
+
+                    <ul><li>Fast <code>(clevel=1)</code> → Low compression, but high-speed read/write performance.</li></ul>
+                    <ul><li>Balanced <code>(clevel=5)</code> → A middle-ground option, providing moderate compression and speed.</li></ul>
+                    <ul><li>Max <code>(clevel=9)</code> → Maximum compression for reducing file size, but at the cost of slower performance.</li></ul></p>
+                    <h6><p>Supported Algorithms:</p></h6>
+                    <table class="table table-striped table-bordered table-hover text-center">
+                        <thead class="table-dark">
+                          <tr>
+                            <th>Compressor</th>
+                            <th>Speed</th>
+                            <th>Ratio</th>
+                            <th>Use Case</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>Blosc+LZ4</td>
+                            <td>★★★★★</td>
+                            <td>20:1</td>
+                            <td>General purpose</td>
+                          </tr>
+                          <tr>
+                            <td>Zstandard</td>
+                            <td>★★★★☆</td>
+                            <td>120:1</td>
+                            <td>Archival storage</td>
+                          </tr>
+                          <tr>
+                            <td>zlib</td>
+                            <td>★★☆☆☆</td>
+                            <td>3:1</td>
+                            <td>Compatibility</td>
+                          </tr>
+                          <tr>
+                            <td>LZMA</td>
+                            <td>★☆☆☆☆</td>
+                            <td>200:1</td>
+                            <td>Maximum compression</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      
+            </ol>
+            <p>If you don't specify a compressor, by default Zarr uses the Zstandard compressor.</p>
+            <p>To disable compression, set <code>compressors=None</code> when creating an array, e.g.:</p>
+            <pre><code class="language-python">
+z = zarr.create_array(store='data/example-8.zarr', shape=(100000000,), chunks=(1000000,), dtype='int32', compressors=None)           
             </code></pre>
-            <p>This example creates a compressed array using <code>zstd</code> compression with a compression level of
-                3.</p>
+
+            
         </div>
 
         <div id="parallelism" class="section">

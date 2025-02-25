@@ -195,7 +195,6 @@ html, body {
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                     <li><a href="#creating-arrays" class="link-dark rounded">Creating Arrays</a></li>
                     <li><a href="#reading-writing" class="link-dark rounded">Reading and Writing Data</a></li>
-                    <li><a href="#parallel-operations" class="link-dark rounded">Parallel Operations</a></li>
                 </ul>
               </div>
             </li>
@@ -444,9 +443,9 @@ z = zarr.create_array(store='data/example-8.zarr', shape=(100000000,), chunks=(1
             
         </div>
 
-        <div id="parallelism" class="section">
+         <div id="parallelism" class="section">
             <h2>Parallelism</h2>
-            <p>Parallelism boosts data processing efficiency by dividing tasks and executing them concurrently. This is crucial for handling large datasets, leveraging multi-core CPUs or distributed systems.</p>
+            <p>Parallelism boosts data processing efficiency by dividing tasks and executing them concurrently. This is crucial for handling large datasets, taking maximum advantage of multi-core CPUs or distributed systems.</p>
             <pre><code class="language-python">
 import zarr
 import dask.array as da
@@ -460,6 +459,92 @@ result = dask_array.sum().compute()
             </code></pre>
             <p>Using Dask, you can perform parallel operations on a Zarr-backed array, leveraging multi-core CPUs or
                 distributed systems for large-scale computation.</p>
+        
+        <p>In general performing operations to data in RAM is faster. 
+            But when we have a large set of data (may be in GB's or PB's), which is larger than RAM typical storage limit
+             we will need to store the data in permanent memory and fetch a part of data that will fit into memeory and perform operation on them.
+             </p>
+        <p>
+            We can store and retrive the data from a csv file or we can use zarr. While csv file is easier to visulise data in a excel sheet it does not support multiproccesing.
+            So zarr is a better option for storing large set of data. Zarr along with 'Dask' can accelerate task.
+        </p>
+
+        <p>The below code shows the importance of zarr in processing large data.</p>
+        <pre><code class="language-python">
+import numpy as np
+import pandas as pd
+import zarr
+import dask.array as da
+import time
+import os
+
+size = (5000, 5000)
+csv_filename = "data_2.csv"
+zarr_store_path = "data_2.zarr"
+
+data = np.random.rand(*size)
+# Save as CSV (slow traditional format)
+pd.DataFrame(data).to_csv(csv_filename, index=False, header=False)
+
+# Save as Zarr (optimized format)
+zarr_store = zarr.open(zarr_store_path, mode='w', shape=size, chunks=(1000, 1000), dtype='float64')
+zarr_store[:] = data
+
+del data
+
+#2. Read & Process Data Using CSV + Pandas
+start_time = time.time()
+csv_data = pd.read_csv(csv_filename, header=None).values
+csv_result = np.sqrt(csv_data) #Operation is performed one by one
+
+end_time = time.time()
+csv_time = end_time - start_time
+print(f"Time taken using CSV + Pandas: {csv_time:.4f} seconds")
+
+# Free up memory
+del csv_data, csv_result
+
+#3. Read & Process Data Using Zarr + Dask
+start_time = time.time()
+dask_array = da.from_zarr(zarr_store_path)
+zarr_result = da.sqrt(dask_array).compute() #Performing operation in parallel
+
+end_time = time.time()
+zarr_time = end_time - start_time
+print(f"Time taken using Zarr + Dask: {zarr_time:.4f} seconds")
+
+# Cleanup files
+os.remove(csv_filename)
+zarr.consolidate_metadata(zarr_store_path)
+
+if csv_time > zarr_time:
+    print("\nZarr + Dask is faster! 🚀")
+else:
+    print("\nCSV + Pandas is faster. (Unlikely for large data!)")
+        </code></pre>
+<p>The above code a data of size 5000x5000 is created and stored in csv and zarr format. Then data is retrived from csv file to calculate the square root of each data element
+    and the time for performing the operation is noted. Similarly time of performing the same operation using zarr and dask is noted. Running the above code we can see the difference zarr makes while processing large data. 
+</p>
+<p>Below is the output of the code in my machine</p>
+<pre><code class="language-bash">
+Time taken using CSV + Pandas: 7.5666 seconds
+Time taken using Zarr + Dask: 0.6108 seconds
+
+Zarr + Dask is faster! 🚀
+</code></pre>
+
+<br><h6>Here is an example to visualise how parallel processing makes operations faster</h6>
+<p>Imagine you are at a tradional library that stores a huge collection of books. Unfortunately there is only one librarian.
+    If you ask the librarian how many books the library has? the librarian counts them one by one, which is slow. Since only one person is working, it takes a long time.</p>
+<p>Now imagine you are at a library in which book shelfs are categorised into sections(chunks).
+Each section is taken care by a assistant, now counting books became more easier, each assistant will count the number of books in their section and report them to librarian. Librarian will sum them and tell you the number of books.
+Since multiple persons are working together (Multiple threads of processor working in parallel) you will get the answer faster.
+</p>
+
+<h6>The below image describe how all this happens.</h6>
+<p>Zarr helps to store large set of data in different chunks (files). Dask take each file and parallely process them.</p>
+<img src="./Images/dask_parallel.png">
+
         </div>
 
         <div id="storage" class="section">
@@ -556,24 +641,6 @@ arr[:] = 42
             <p>Here, data is written to all elements of the array with the value 42.</p>
         </div>
 
-        <div id="parallel-operations" class="section">
-            <h2>Parallel Operations</h2>
-            <p>Zarr supports parallel reading and writing of chunked arrays, which is especially beneficial when working
-                with large datasets.</p>
-            <pre><code class="language-python">
-import zarr
-import dask.array as da
-
-# Create a Zarr-backed Dask array
-arr = zarr.open('data.zarr', mode='r', shape=(10000, 10000), dtype='f4', chunks=(1000, 1000))
-dask_arr = da.from_array(arr, chunks=(1000, 1000))
-
-# Perform a parallel operation
-result = dask_arr.mean().compute()
-            </code></pre>
-            <p>This example demonstrates performing parallel operations on a Zarr array using Dask, which efficiently
-                computes the mean of the array.</p>
-        </div>
 
         <div id="conclusion" class="section">
             <h2>Conclusion</h2>
